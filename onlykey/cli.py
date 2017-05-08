@@ -15,7 +15,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.filters import Condition
 import ed25519
 
-from client import OnlyKey, Message, MessageField
+from .client import OnlyKey, Message, MessageField
 
 only_key = OnlyKey()
 
