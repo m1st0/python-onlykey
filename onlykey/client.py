@@ -193,7 +193,7 @@ class OnlyKey(object):
 
         # Append the raw payload, expect a string or a list of int
         if payload:
-            if isinstance(payload, (str, unicode)):
+            if isinstance(payload, str):
                 logging.debug('payload="%s"', payload)
                 for c in payload:
                     raw_bytes.append(ord(c))
@@ -209,7 +209,7 @@ class OnlyKey(object):
 
         # Send the message
         logging.debug('sending message')
-        print('send_message', len(raw_bytes))
+        print(('send_message', len(raw_bytes)))
         print(raw_bytes)
         self._hid.write(raw_bytes)
 
@@ -219,7 +219,7 @@ class OnlyKey(object):
             raise Exception("Missing msg")
 
         # Split the payload in multiple chunks
-        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE] for x in xrange(0, len(payload), 58)]
+        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE] for x in range(0, len(payload), 58)]
         for chunk in chunks:
             # print chunk
             # print [ord(c) for c in chunk]
@@ -246,7 +246,7 @@ class OnlyKey(object):
             raise Exception("Missing msg")
 
         # Split the payload in multiple chunks
-        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in xrange(0, len(payload), 57)]
+        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in range(0, len(payload), 57)]
         for chunk in chunks:
             # print chunk
             # print [ord(c) for c in chunk]
@@ -274,7 +274,7 @@ class OnlyKey(object):
             raise Exception("Missing msg")
 
         # Split the payload in multiple chunks
-        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in xrange(0, len(payload), 57)]
+        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in range(0, len(payload), 57)]
         for chunk in chunks:
             # print chunk
             # print [ord(c) for c in chunk]
@@ -356,8 +356,8 @@ class OnlyKey(object):
             tmp[slot.name] = slot
         slots = iter(['RSA Key 1', 'RSA Key 2', 'RSA Key 3', 'RSA Key 4', 'ECC Key 1', 'ECC Key 2', 'ECC Key 3', 'ECC Key 4', 'ECC Key 5', 'ECC Key 6', 'ECC Key 7', 'ECC Key 8', 'ECC Key 9', 'ECC Key 10', 'ECC Key 11', 'ECC Key 12', 'ECC Key 13', 'ECC Key 14', 'ECC Key 15', 'ECC Key 16', 'ECC Key 17', 'ECC Key 18', 'ECC Key 19', 'ECC Key 20', 'ECC Key 21', 'ECC Key 22', 'ECC Key 23', 'ECC Key 24', 'ECC Key 25', 'ECC Key 26', 'ECC Key 27', 'ECC Key 28', 'ECC Key 29', 'ECC Key 30', 'ECC Key 31', 'ECC Key 32'])
         for slot_name in slots:
-            print(tmp[slot_name].to_str())
-            print(tmp[next(slots)].to_str())
+            print((tmp[slot_name].to_str()))
+            print((tmp[next(slots)].to_str()))
 
     def setslot(self, slot_number, message_field, value):
         """Set a slot field to the given value.
@@ -367,17 +367,17 @@ class OnlyKey(object):
         self.send_message(msg=Message.OKSETSLOT, slot_id=slot_number, message_field=message_field, payload=value)
         # Set U2F
         # [255, 255, 255, 255, 230, 12, 8, 117, 50, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        print(self.read_string())
+        print((self.read_string()))
 
     def wipeslot(self, slot_number):
         """Wipe all the fields for the given slot."""
         self.send_message(msg=Message.OKWIPESLOT, slot_id=slot_number)
-        for _ in xrange(8):
-            print(self.read_string())
+        for _ in range(8):
+            print((self.read_string()))
 
     def sign(self, SignatureHash):
         global slotnum
-        print('Signature hash to send to OnlyKey= ', binascii.hexlify(SignatureHash))
+        print(('Signature hash to send to OnlyKey= ', binascii.hexlify(SignatureHash)))
 
         time.sleep(2)
 
@@ -388,7 +388,7 @@ class OnlyKey(object):
 
         time.sleep(1)
         print('You should see your OnlyKey blink 3 times')
-        print
+        print()
 
         # Compute the challenge pin
         h = hashlib.sha256()
@@ -409,8 +409,8 @@ class OnlyKey(object):
         self.send_large_message2(msg=Message.OKSIGNCHALLENGE, payload=SignatureHash, slot_id=slotnum)
 
         print('Please enter the 3 digit challenge code on OnlyKey (and press ENTER if necessary)')
-        print('{} {} {}'.format(b1, b2, b3))
-        raw_input()
+        print(('{} {} {}'.format(b1, b2, b3)))
+        input()
         print('Trying to read the signature from OnlyKey')
         print('For RSA with 4096 keysize this may take up to 9 seconds...')
         ok_sign1 = ''
@@ -418,91 +418,91 @@ class OnlyKey(object):
             time.sleep(0.5)
             ok_sign1= self.read_bytes(64, to_str=True)
 
-        print
-        print('received=', repr(ok_sign1))
+        print()
+        print(('received=', repr(ok_sign1)))
 
         print('Trying to read the signature part 2...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_sign2 = self.read_bytes(64, to_str=True)
             if len(ok_sign2) == 64:
                 break
 
-        print
+        print()
 
-        print('received=', repr(ok_sign2))
+        print(('received=', repr(ok_sign2)))
 
         print('Trying to read the signature part 3...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_sign3 = self.read_bytes(64, to_str=True)
             if len(ok_sign3) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_sign3))
+        print(('received=', repr(ok_sign3)))
 
         print('Trying to read the signature part 4...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_sign4 = self.read_bytes(64, to_str=True)
             if len(ok_sign4) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_sign4))
+        print(('received=', repr(ok_sign4)))
 
         print('Trying to read the signature part 5...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_sign5 = self.read_bytes(64, to_str=True)
             if len(ok_sign5) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_sign5))
+        print(('received=', repr(ok_sign5)))
 
         print('Trying to read the signature part 6...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_sign6 = self.read_bytes(64, to_str=True)
             if len(ok_sign6) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_sign6))
+        print(('received=', repr(ok_sign6)))
 
         print('Trying to read the signature part 7...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_sign7 = self.read_bytes(64, to_str=True)
             if len(ok_sign7) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_sign7))
+        print(('received=', repr(ok_sign7)))
 
         print('Trying to read the signature part 8...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_sign8 = self.read_bytes(64, to_str=True)
             if len(ok_sign8) == 64:
                 break
 
-        print
+        print()
 
-        print('received=', repr(ok_sign8))
+        print(('received=', repr(ok_sign8)))
 
         if not ok_sign2:
             raise Exception('failed to read signature from OnlyKey')
 
         ok_signed = ok_sign1 + ok_sign2 + ok_sign3 + ok_sign4 + ok_sign5 + ok_sign6 + ok_sign7 + ok_sign8
 
-        print('Signed by OnlyKey, data=', repr(ok_signed))
-        print('Raw Signature= ', binascii.hexlify(ok_signed))
+        print(('Signed by OnlyKey, data=', repr(ok_signed)))
+        print(('Raw Signature= ', binascii.hexlify(ok_signed)))
 
         return ok_signed
 
@@ -522,7 +522,7 @@ class OnlyKey(object):
 
         time.sleep(1)
         print('You should see your OnlyKey blink 3 times')
-        print
+        print()
 
 
         print('Trying to read the public RSA N part 1...')
@@ -533,83 +533,83 @@ class OnlyKey(object):
             time.sleep(0.5)
             ok_pubkey1= self.read_bytes(64, to_str=True)
 
-        print
-        print('received=', repr(ok_pubkey1))
+        print()
+        print(('received=', repr(ok_pubkey1)))
 
         print('Trying to read the public RSA N part 2...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_pubkey2 = self.read_bytes(64, to_str=True)
             if len(ok_pubkey2) == 64:
                 break
 
-        print
+        print()
 
-        print('received=', repr(ok_pubkey2))
+        print(('received=', repr(ok_pubkey2)))
 
         print('Trying to read the public RSA N part 3...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_pubkey3 = self.read_bytes(64, to_str=True)
             if len(ok_pubkey3) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_pubkey3))
+        print(('received=', repr(ok_pubkey3)))
 
         print('Trying to read the public RSA N part 4...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_pubkey4 = self.read_bytes(64, to_str=True)
             if len(ok_pubkey4) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_pubkey4))
+        print(('received=', repr(ok_pubkey4)))
 
         print('Trying to read the public RSA N part 5...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_pubkey5 = self.read_bytes(64, to_str=True)
             if len(ok_pubkey5) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_pubkey5))
+        print(('received=', repr(ok_pubkey5)))
 
         print('Trying to read the public RSA N part 6...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_pubkey6 = self.read_bytes(64, to_str=True)
             if len(ok_pubkey6) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_pubkey6))
+        print(('received=', repr(ok_pubkey6)))
 
         print('Trying to read the public RSA N part 7...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_pubkey7 = self.read_bytes(64, to_str=True)
             if len(ok_pubkey7) == 64:
                 break
 
 
-        print
+        print()
 
-        print('received=', repr(ok_pubkey7))
+        print(('received=', repr(ok_pubkey7)))
 
         print('Trying to read the public RSA N part 8...')
-        for _ in xrange(10):
+        for _ in range(10):
             ok_pubkey8 = self.read_bytes(64, to_str=True)
             if len(ok_pubkey8) == 64:
                 break
 
-        print
+        print()
 
-        print('received=', repr(ok_pubkey8))
+        print(('received=', repr(ok_pubkey8)))
 
         if not ok_pubkey2:
             raise Exception('failed to read public RSA N from OnlyKey')
@@ -617,11 +617,11 @@ class OnlyKey(object):
 
         print('Received Public Key generated by OnlyKey')
         ok_pubkey = ok_pubkey1 + ok_pubkey2 + ok_pubkey3 + ok_pubkey4 + ok_pubkey5 + ok_pubkey6 + ok_pubkey7 + ok_pubkey8
-        print('Public N=', repr(ok_pubkey))
-        print
+        print(('Public N=', repr(ok_pubkey)))
+        print()
 
-        print('Key Size =', len(ok_pubkey))
-        print
+        print(('Key Size =', len(ok_pubkey)))
+        print()
 
         return ok_pubkey
 
@@ -636,7 +636,7 @@ class OnlyKey(object):
 
         time.sleep(1)
         print('You should see your OnlyKey blink 3 times')
-        print
+        print()
 
         # Compute the challenge pin
         h = hashlib.sha256()
@@ -657,8 +657,8 @@ class OnlyKey(object):
         self.send_large_message2(msg=Message.OKDECRYPT, payload=ct, slot_id=slotnum)
 
         print('Please enter the 3 digit challenge code on OnlyKey (and press ENTER if necessary)')
-        print('{} {} {}'.format(b1, b2, b3))
-        raw_input()
+        print(('{} {} {}'.format(b1, b2, b3)))
+        input()
         print('Trying to read the decrypted data from OnlyKey')
         print('For RSA with 4096 keysize this may take up to 9 seconds...')
         ok_decrypted = ''
@@ -666,6 +666,6 @@ class OnlyKey(object):
             time.sleep(0.5)
             ok_decrypted = self.read_bytes(64, to_str=True)
 
-        print('Decrypted by OnlyKey, data=', repr(ok_decrypted))
+        print(('Decrypted by OnlyKey, data=', repr(ok_decrypted)))
 
         return ok_decrypted

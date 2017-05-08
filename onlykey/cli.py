@@ -1,5 +1,5 @@
 # coding: utf-8
-from __future__ import unicode_literals, print_function
+
 
 import time
 import logging
@@ -45,17 +45,17 @@ def utils():
 
             with open(privkey, 'rb') as f:
                 raw_privkey = f.read()
-                print
+                print()
                 print ('Enter ECC key slot number to use (1 - 32) or enter 0 to list key labels')
-                print
-                slot = int(raw_input())
+                print()
+                slot = int(input())
 
             while slot == 0:
                 ok.displaykeylabels()
-                print
+                print()
                 print ('Enter ECC key slot number to use (1 - 32) or enter 0 to list key labels')
-                print
-                slot = int(raw_input())
+                print()
+                slot = int(input())
 
             slot = slot + 100 # ECC keys in slot 101 - 132
             only_key.set_ecc_key(slot, (1+16+32+64+128), raw_privkey) #set ECC key with all features
@@ -76,17 +76,17 @@ def init():
     for msg in [Message.OKSETPIN, Message.OKSETPDPIN, Message.OKSETSDPIN]:
         only_key.send_message(msg=msg)
         print(only_key.read_string())
-        print
-        raw_input('Press the Enter key once you are done')
+        print()
+        input('Press the Enter key once you are done')
         only_key.send_message(msg=msg)
         print(only_key.read_string())
         only_key.send_message(msg=msg)
         print(only_key.read_string())
-        print
-        raw_input('Press the Enter key once you are done')
+        print()
+        input('Press the Enter key once you are done')
         only_key.send_message(msg=msg)
         print(only_key.read_string())
-        print
+        print()
 
 def cli():
     logging.basicConfig(level=logging.DEBUG)
