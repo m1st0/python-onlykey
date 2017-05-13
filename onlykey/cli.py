@@ -223,7 +223,12 @@ def cli():
                 continue
 
             only_key.wipeslot(slot_id)
-
+        elif data[0] == 'settime':
+            try:
+                only_key.set_time()
+            except:
+                print("Tried to set the TOTP time")
+                continue
 
 def main():
     try:
