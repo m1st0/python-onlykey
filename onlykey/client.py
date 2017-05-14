@@ -3,8 +3,7 @@ import logging
 import time
 import binascii
 import hashlib
-import math
-
+import re
 import hid
 from aenum import Enum
 
@@ -307,17 +306,14 @@ class OnlyKey(object):
         """Read an ASCII string."""
         return ''.join([chr(item) for item in self.read_bytes(MAX_INPUT_REPORT_SIZE, timeout_ms=timeout_ms) if item != 0])
 
-    def format_time_int(x, y):
-        """Concactenate ints."""
-        a = math.floor(math.log10(y))
-        return int(x*10**(1+a)+y)
-
     def set_time(self):
-        """Initiaite TOTP passwords."""
-        timemessage = self.format_time_int(Message.OKSETTIME, int(time.time()))
-        self.send_message(msg=timemessage)
+        """Initiaite TOTP time."""
+        currentEpochTime = int(time.time())
+        hexEpochTime = format(currentEpochTime, '02x')
+        logging.debug('hexEpochTime=%s', hexEpochTime)
+        timeParts = re.findall(".{2}", hexEpochTime)
+        self.send_message(msg=Message.OKSETTIME, payload=timeParts)
         time.sleep(0.2)
-        return self.getlabels(self)
 
     def getlabels(self):
         """Fetch the list of `Slot` from the OnlyKey.

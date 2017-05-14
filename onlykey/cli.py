@@ -227,7 +227,7 @@ def cli():
             try:
                 only_key.set_time()
             except:
-                print("Tried to set the TOTP time")
+                print("Failed to set the TOTP time")
                 continue
 
 def main():
