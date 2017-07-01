@@ -1,5 +1,6 @@
+cython
 ed25519
-Cython
-prompt_toolkit
 hidapi
+six
+prompt_toolkit
 aenum

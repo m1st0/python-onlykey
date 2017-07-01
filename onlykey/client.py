@@ -3,20 +3,31 @@ import logging
 import time
 import binascii
 import hashlib
-import re
+import os
+
 import hid
 from aenum import Enum
+from sys import platform
 
 log = logging.getLogger(__name__)
 
-ID_VENDOR = 5824
-ID_PRODUCT = 1158
+DEVICE_IDS = [
+    (0x16C0, 0x0486),  # OnlyKey
+    (0x1d50, 0x60fc),  # OnlyKey
+]
 
-MAX_INPUT_REPORT_SIZE = 64
-MAX_LARGE_PAYLOAD_SIZE = 58  # 64 - <4 bytes header> - <1 byte message> - <1 byte size|0xFF if max>
-MATX_OUTPUT_REPORT_SIZE = 64
+if os.name== 'nt':
+	MAX_INPUT_REPORT_SIZE = 65
+	MATX_OUTPUT_REPORT_SIZE = 65
+	MESSAGE_HEADER = [0, 255, 255, 255, 255]
+else:
+	MAX_INPUT_REPORT_SIZE = 64
+	MATX_OUTPUT_REPORT_SIZE = 64
+	MESSAGE_HEADER = [255, 255, 255, 255]
+
 MAX_FEATURE_REPORTS = 0
-MESSAGE_HEADER = [255, 255, 255, 255]
+MAX_LARGE_PAYLOAD_SIZE = 58  # 64 - <4 bytes header> - <1 byte message> - <1 byte size|0xFF if max>
+
 
 SLOTS_NAME= {
     1: '1a',
@@ -150,8 +161,21 @@ class OnlyKey(object):
 
     def _connect(self):
         try:
-            self._hid.open(ID_VENDOR, ID_PRODUCT)
-            self._hid.set_nonblocking(1)
+            # self._hid.enumerate
+            # self._hid.open(ID_VENDOR, ID_PRODUCT)
+            for d in hid.enumerate(0, 0):
+        		vendor_id = d['vendor_id']
+        		product_id = d['product_id']
+        		serial_number = d['serial_number']
+        		interface_number = d['interface_number']
+        		usage_page = d['usage_page']
+        		path = d['path']
+
+        		if (vendor_id, product_id) in DEVICE_IDS:
+        			if usage_page == 0xf1d0 or interface_number == 0:
+                                	self._hid.open_path(path)
+                                	self._hid.set_nonblocking(True)
+                            
         except:
             log.exception('failed to connect')
             raise OnlyKeyUnavailableException()
@@ -321,7 +345,7 @@ class OnlyKey(object):
         No need to read messages.
         """
         self.send_message(msg=Message.OKGETLABELS)
-        time.sleep(0.2)
+        time.sleep(0.5)
         slots = []
         for _ in range(12):
             data = self.read_string().split('|')
@@ -338,7 +362,7 @@ class OnlyKey(object):
         No need to read messages.
         """
         self.send_message(msg=Message.OKGETLABELS, slot_id=107)
-        time.sleep(0.4)
+        time.sleep(2)
         slots = []
         for _ in range(36):
             data = self.read_string().split('|')
