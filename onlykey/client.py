@@ -184,7 +184,18 @@ class OnlyKey(object):
         return self._hid.close()
 
     def initialized(self):
-        return self._read_string() == 'INITIALIZED'
+        return self.read_string() == 'INITIALIZED'
+
+    def set_time(self, timestamp):
+        # Hex format without leading 0x
+        current_epoch_time = format(int(timestamp), 'x')
+        # pad with zeros for even digits
+        current_epoch_time = current_epoch_time.zfill(len(current_epoch_time) + len(current_epoch_time) % 2)
+        logging.debug('Setting current epoch time =', current_epoch_time)
+        payload = [int(current_epoch_time[i: i+2], 16) for i in range(0, len(current_epoch_time), 2)]
+
+        logging.debug('SENDING OKSETTIME:', [x for x in enumerate(payload)]);
+        self.send_message(msg=Message.OKSETTIME, payload=payload)
 
     def set_ecc_key(self, key_type, slot, key):
         payload = [key_type, slot] + [ord(c) for c in key]
@@ -232,9 +243,7 @@ class OnlyKey(object):
             raw_bytes.append(0)
 
         # Send the message
-        logging.debug('sending message')
-        print(('send_message', len(raw_bytes)))
-        print(raw_bytes)
+        logging.debug('sending message ')
         self._hid.write(raw_bytes)
 
     def send_large_message(self, payload=None, msg=None, slot_id=chr(101)):
@@ -243,7 +252,7 @@ class OnlyKey(object):
             raise Exception("Missing msg")
 
         # Split the payload in multiple chunks
-        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE] for x in range(0, len(payload), 58)]
+        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE] for x in xrange(0, len(payload), 58)]
         for chunk in chunks:
             # print chunk
             # print [ord(c) for c in chunk]
@@ -270,7 +279,7 @@ class OnlyKey(object):
             raise Exception("Missing msg")
 
         # Split the payload in multiple chunks
-        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in range(0, len(payload), 57)]
+        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in xrange(0, len(payload), 57)]
         for chunk in chunks:
             # print chunk
             # print [ord(c) for c in chunk]
@@ -298,7 +307,7 @@ class OnlyKey(object):
             raise Exception("Missing msg")
 
         # Split the payload in multiple chunks
-        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in range(0, len(payload), 57)]
+        chunks = [payload[x:x+MAX_LARGE_PAYLOAD_SIZE-1] for x in xrange(0, len(payload), 57)]
         for chunk in chunks:
             # print chunk
             # print [ord(c) for c in chunk]

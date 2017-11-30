@@ -62,9 +62,9 @@ sudo pip uninstall crypto
 ```
 $ git clone https://github.com/trustcrypto/python-onlykey.git --recursive
 $ cd python-onlykey
-$ python.exe setup.py install
+$ pip2 install .
 $ cd PGPy
-$ python.exe setup.py install
+$ pip2 install .
 $ cd ..
 ```
 
@@ -103,9 +103,9 @@ sudo pacman -Sy git python2-setuptools python2 libusb python2-pip
 ```
 $ git clone https://github.com/trustcrypto/python-onlykey.git --recursive
 $ cd python-onlykey
-$ sudo python setup.py install
+$ pip2 install .
 $ cd PGPy
-$ sudo python setup.py install
+$ pip2 install .
 $ cd ..
 ```
 
